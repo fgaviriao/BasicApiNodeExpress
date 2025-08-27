@@ -596,6 +596,90 @@
           }
         }
       }
+    },
+    "/credentials/request_password_reset": {
+      "post": {
+        "tags": [
+          "Credenciales"
+        ],
+        "summary": "Solicitar restablecimiento de contraseña",
+        "description": "Endpoint para solicitar un restablecimiento de contraseña. Se genera un token y se envía al correo electrónico proporcionado.",
+        "responses": {
+          "200": {
+            "description": "Solicitud de restablecimiento de contraseña exitosa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResetPasswordResponse"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResetPasswordResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error en la solicitud de restablecimiento de contraseña"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/credentials/reset_password": {
+      "put": {
+        "tags": [
+          "Credenciales"
+        ],
+        "summary": "Restablecer contraseña",
+        "description": "Endpoint para restablecer la contraseña utilizando un token válido.",
+        "responses": {
+          "200": {
+            "description": "Contraseña actualizada correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatePasswordResponse"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatePasswordResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error al restablecer la contraseña"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordRequest"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -807,6 +891,90 @@
         },
         "xml": {
           "name": "RefreshTokenResponse"
+        }
+      },
+      "Credentials": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "johndoe"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          }
+        },
+        "xml": {
+          "name": "Credentials"
+        }
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "correo@ejemplo.com"
+          }
+        },
+        "xml": {
+          "name": "ResetPasswordRequest"
+        }
+      },
+      "ResetPasswordResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "correo@ejemplo.com"
+          },
+          "createAt": {
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "expireAt": {
+            "type": "string",
+            "example": "2024-01-01T01:00:00.000Z"
+          }
+        },
+        "xml": {
+          "name": "ResetPasswordResponse"
+        }
+      },
+      "UpdatePasswordRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "correo@ejemplo.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "example": "password"
+          },
+          "token": {
+            "type": "string",
+            "example": "d1f1e1c1-1a1a-1b1b-1c1c-1d1d1e1e1f1f"
+          }
+        },
+        "xml": {
+          "name": "UpdatePasswordRequest"
+        }
+      },
+      "UpdatePasswordResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Contraseña actualizada correctamente"
+          }
+        },
+        "xml": {
+          "name": "UpdatePasswordResponse"
         }
       }
     }

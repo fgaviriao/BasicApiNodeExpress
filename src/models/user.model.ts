@@ -1,5 +1,5 @@
 import { IEditRequest, IFindRequest } from "./common.model";
-import { ICredentials } from "./common.model";
+import { ICredentials } from "./credential.model";
 
 export interface IUser {
   email: string;

@@ -12,7 +12,9 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Importa y usa tus rutas
 import userRoutes from "./routes/user.routes";
 import authRoutes from "./routes/auth.routes";
+import credentialRoutes from "./routes/credential.routes";
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
+app.use("/api", credentialRoutes);
 
 export default app;

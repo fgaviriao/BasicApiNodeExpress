@@ -1,4 +1,4 @@
-import { ICredentials } from "./common.model";
+import { ICredentials } from "./credential.model";
 
 export interface ILoginRequest extends ICredentials {}
 

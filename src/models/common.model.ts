@@ -24,8 +24,3 @@ export interface IFindOneRequest {
   id: string;
   userId: string;
 }
-
-export interface ICredentials {
-  username: string;
-  password: string;
-}
