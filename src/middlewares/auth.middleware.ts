@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyAccessToken } from "../utils/jwt.util";
+import { JwtPayload } from "../utils/jwt.util";
 
 export function authenticateToken(
   req: Request,
@@ -11,7 +11,7 @@ export function authenticateToken(
   if (!token) return res.sendStatus(401);
 
   try {
-    const user = verifyAccessToken(token);
+    const user = JwtPayload.verifyAccessToken(token);
     (req as any).user = user;
     next();
   } catch {

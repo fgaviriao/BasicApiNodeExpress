@@ -1,8 +1,9 @@
 import { Router } from "express";
-import * as userController from "../controllers/user.controller";
+import { UserController } from "../controllers/user.controller";
 import { authenticateToken } from "../middlewares/auth.middleware";
 
 const router = Router();
+const userController = new UserController();
 
 router.post("/users", authenticateToken, userController.createUser);
 router.put("/users", authenticateToken, userController.editUser);

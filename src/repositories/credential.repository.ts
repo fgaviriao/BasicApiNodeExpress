@@ -1,61 +1,77 @@
-import bcrypt from "bcryptjs";
 import { getConnection } from "../config/db";
-import {
-  IFindValidResetPasswordEntity,
-  IResetPasswordEntity,
-  IResetPasswordUsedEntity,
-  IUpdatePasswordEntity,
-} from "../models/credential.model";
+import { ICredentialRepository } from "../domain/repositories/ICredentialRepository";
+import { ICredentialResetToken } from "../domain/entities/ICredentialResetToken";
 
-export class CredentialRepository {
-  private static readonly SQL_UPDATE_PASSWORD = `UPDATE Users SET PasswordHash = @passwordHash WHERE Email = @email`;
-  private static readonly SQL_INSERT_RESET_PASSWORD = `INSERT INTO ResetPasswords (Email, Token, CreatedAt, ExpireAt) 
+export class CredentialRepository implements ICredentialRepository {
+  async createResetPasswordToken(
+    entity: ICredentialResetToken
+  ): Promise<boolean> {
+    try {
+      const SQL = `INSERT INTO ResetPasswords (Email, Token, CreatedAt, ExpireAt) 
     VALUES (@email, @token, @createdAt, @expireAt)`;
-  private static readonly SQL_FIND_RESET_PASSWORD = `SELECT * FROM ResetPasswords WHERE Email = @email AND Token = @token`;
-  private static readonly SQL_MARK_RESET_PASSWORD_AS_USED = `UPDATE ResetPasswords SET UsedAt = @usedAt WHERE Email = @email AND Token = @token`;
+      const pool = await getConnection();
 
-  public static async updatePasswordByEmail(
-    entity: IUpdatePasswordEntity
-  ): Promise<void> {
-    const pool = await getConnection();
-    const passwordHash = await bcrypt.hash(entity.password, 10);
-
-    await pool
-      .request()
-      .input("passwordHash", passwordHash)
-      .input("email", entity.email)
-      .query(this.SQL_UPDATE_PASSWORD);
+      await pool
+        .request()
+        .input("email", entity.email)
+        .input("token", entity.token)
+        .input("createdAt", entity.createdAt)
+        .input("expireAt", entity.expireAt)
+        .query(SQL);
+      return true;
+    } catch (error) {
+      console.log("createResetPasswordToken:", error);
+      return false;
+    }
   }
-
-  public static async createResetPasswordEntry(
-    entity: IResetPasswordEntity
-  ): Promise<void> {
+  async setNewPassword(email: string, newPassword: string): Promise<boolean> {
     const pool = await getConnection();
-
-    await pool
-      .request()
-      .input("email", entity.email)
-      .input("token", entity.token)
-      .input("createdAt", entity.createdAt)
-      .input("expireAt", entity.expireAt)
-      .query(this.SQL_INSERT_RESET_PASSWORD);
+    const SQL = `UPDATE Users SET PasswordHash = @passwordHash WHERE Email = @email`;
+    try {
+      await pool
+        .request()
+        .input("passwordHash", newPassword)
+        .input("email", email)
+        .query(SQL);
+      return true;
+    } catch (error) {
+      console.log("setNewPassword:", error);
+      return false;
+    }
   }
-
-  public static async findValidResetPasswordEntry(
-    entity: IFindValidResetPasswordEntity
-  ): Promise<IResetPasswordEntity | undefined> {
+  async setPaswordTokenUsed(email: string, token: string): Promise<boolean> {
+    const SQL = `UPDATE ResetPasswords SET UsedAt = @usedAt WHERE Email = @email AND Token = @token`;
+    try {
+      const pool = await getConnection();
+      await pool
+        .request()
+        .input("email", email)
+        .input("token", token)
+        .input("usedAt", new Date())
+        .query(SQL);
+      return true;
+    } catch (error) {
+      console.log("setNewPassword:", error);
+      return false;
+    }
+  }
+  async findResetPasswordToken(
+    email: string,
+    token: string
+  ): Promise<ICredentialResetToken | undefined> {
+    const SQL = `SELECT * FROM ResetPasswords WHERE Email = @email AND Token = @token`;
     const pool = await getConnection();
     const result = await pool
       .request()
-      .input("email", entity.email)
-      .input("token", entity.token)
-      .query(this.SQL_FIND_RESET_PASSWORD);
+      .input("email", email)
+      .input("token", token)
+      .query(SQL);
 
     const row = result.recordset[0];
 
     if (!row) return undefined;
 
-    const resetPasswordEntry: IResetPasswordEntity = {
+    const resetPasswordEntry: ICredentialResetToken = {
       email: row.Email,
       token: row.Token,
       createdAt: row.CreatedAt,
@@ -64,17 +80,5 @@ export class CredentialRepository {
     };
 
     return resetPasswordEntry;
-  }
-
-  public static async markResetPasswordAsUsed(
-    entity: IResetPasswordUsedEntity
-  ): Promise<void> {
-    const pool = await getConnection();
-    await pool
-      .request()
-      .input("email", entity.email)
-      .input("token", entity.token)
-      .input("usedAt", new Date())
-      .query(this.SQL_MARK_RESET_PASSWORD_AS_USED);
   }
 }

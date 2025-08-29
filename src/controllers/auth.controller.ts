@@ -1,14 +1,12 @@
 import { Request, Response } from "express";
-import { validateUser } from "../services/auth.service";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-  verifyRefreshToken,
-} from "../utils/jwt.util";
-import { refreshTokens } from "../repositories/user.repository";
+import { AuthService } from "../services/auth.service";
+import { JwtPayload } from "../utils/jwt.util";
+import { UserRespository } from "../repositories/UserRepository";
 
-export async function login(req: Request, res: Response) {
-  /*
+export class AuthController {
+  constructor() {}
+  async login(req: Request, res: Response) {
+    /*
   #swagger.summary = 'Iniciar sesión'
   #swagger.description = 'Endpoint para que los usuarios inicien sesión y obtengan tokens de acceso y actualización.'
   #swagger.tags = ['Autenticación']
@@ -30,22 +28,18 @@ export async function login(req: Request, res: Response) {
   }
   #swagger.responses[401] = { description: 'Credenciales inválidas' }
   */
-  const { username, password } = req.body;
-  const user = await validateUser(username, password);
-  if (!user)
-    return res
-      .status(401)
-      .json({ message: "Usuario no encontrado o contraseña incorrecta" });
+    const { username, password } = req.body;
+    const service = new AuthService(new UserRespository());
+    const jwtAcces = await service.login(username, password);
+    if (!jwtAcces)
+      return res
+        .status(401)
+        .json({ message: "Usuario no encontrado o contraseña incorrecta" });
 
-  const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
-  refreshTokens.push(refreshToken);
-
-  res.json({ accessToken, refreshToken });
-}
-
-export function refreshToken(req: Request, res: Response) {
-  /*
+    res.json(jwtAcces);
+  }
+  async refreshToken(req: Request, res: Response) {
+    /*
   #swagger.summary = 'Refrescar token'
   #swagger.description = 'Endpoint para refrescar el token de acceso utilizando un token de actualización.'
   #swagger.tags = ['Autenticación']
@@ -62,19 +56,17 @@ export function refreshToken(req: Request, res: Response) {
   #swagger.responses[401] = { description: 'Token no proporcionado' }
   #swagger.responses[403] = { description: 'Token inválido' }
   */
-  const { token } = req.body;
-  if (!token) return res.sendStatus(401);
-  if (!refreshTokens.includes(token)) return res.sendStatus(403);
+    const { token } = req.body;
+    if (!token) return res.sendStatus(401);
+    const service = new AuthService(new UserRespository());
+    if (!service.isRefreshTokenValid(token)) return res.sendStatus(403);
 
-  try {
-    const user = verifyRefreshToken(token);
-    const accessToken = generateAccessToken(user);
-    res.json({ accessToken });
-  } catch {
-    res.sendStatus(403);
+    try {
+      const { id, username } = JwtPayload.verifyRefreshToken(token);
+      const accessToken = JwtPayload.generateAccessToken(id, username);
+      res.json({ accessToken });
+    } catch {
+      res.sendStatus(403);
+    }
   }
-}
-
-export function protectedRoute(req: Request, res: Response) {
-  res.json({ message: "Acceso autorizado", user: (req as any).user });
 }
