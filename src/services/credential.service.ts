@@ -1,6 +1,6 @@
 import { ICredentialResetToken } from "../domain/entities/ICredentialResetToken";
 import { ICredentialRepository } from "../domain/repositories/ICredentialRepository";
-import bcrypt from "bcryptjs";
+import { BcryptUtil } from "../utils/bcript.util";
 
 export class CredentialService {
   constructor(private credentialRespository: ICredentialRepository) {}
@@ -10,7 +10,7 @@ export class CredentialService {
     return this.credentialRespository.createResetPasswordToken(entity);
   }
   async setNewPassword(email: string, newPassword: string): Promise<boolean> {
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await BcryptUtil.hashPassword(newPassword);
     return this.credentialRespository.setNewPassword(email, hashedPassword);
   }
   async setPaswordTokenUsed(email: string, token: string): Promise<boolean> {
