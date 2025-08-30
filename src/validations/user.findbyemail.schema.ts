@@ -1,0 +1,17 @@
+import * as yup from "yup";
+import { IUserCreateDto } from "../dtos/IUserCreateDto";
+import { ValidationFactory } from "./validation.factory";
+export const findByEmailSchema: yup.Schema<IUserCreateDto> = yup.object({
+  username: yup
+    .string()
+    .required("El nombre de usuario es requerido")
+    .min(3, "El nombre de usuario debe tener al menos 3 caracteres"),
+  email: ValidationFactory.getEmailRules(),
+  password: ValidationFactory.getPasswordRules(),
+  confirmPassword: yup
+    .string()
+    .required("La confirmación de contraseña es requerida")
+    .oneOf([yup.ref("password")], "Las contraseñas no coinciden"),
+  firstName: yup.string().required("El nombre es requerido"),
+  lastName: yup.string().required("El apellido es requerido"),
+});

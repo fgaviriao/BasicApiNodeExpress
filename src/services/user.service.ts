@@ -4,11 +4,13 @@ import { IUserRepository } from "../domain/repositories/IUserRepository";
 import { IUserCreateDto } from "../dtos/IUserCreateDto";
 import { IUsersCriteria } from "../domain/entities/IUserCriteria";
 import { BcryptUtil } from "../utils/bcript.util";
+import { UserDto } from "../dtos/UserDto";
+import { Mapper } from "../utils/mapper.utils";
 
 export class UserService {
   constructor(private userRepository: IUserRepository) {}
 
-  async createUser(user: IUserCreateDto): Promise<User> {
+  async createUser(user: IUserCreateDto): Promise<UserDto> {
     const hashedPassword = await BcryptUtil.hashPassword(user.password);
     const userEntity: IUserCreateEntity = {
       ...user,
@@ -17,34 +19,45 @@ export class UserService {
       password: hashedPassword,
     } as IUserCreateEntity;
 
-    return this.userRepository.create(userEntity);
+    const userCreated = await this.userRepository.create(userEntity);
+    return Mapper.mapObject(userCreated, new UserDto({}));
   }
 
-  async editUser(user: IUserEdit): Promise<User | undefined> {
-    return this.userRepository.edit(user);
+  async editUser(user: IUserEdit): Promise<UserDto | undefined> {
+    const userFound = await this.userRepository.edit(user);
+    if (!userFound) return undefined;
+    return Mapper.mapObject(userFound, new UserDto({}));
   }
 
   async setActiveState(id: string, isActive: boolean): Promise<boolean> {
-    return this.userRepository.editActiveState(id, isActive);
+    return await this.userRepository.editActiveState(id, isActive);
   }
 
   async setLockedState(id: string, isLocked: boolean): Promise<boolean> {
-    return this.userRepository.editLockedState(id, isLocked);
+    return await this.userRepository.editLockedState(id, isLocked);
   }
 
-  async findUsers(): Promise<User[] | undefined> {
-    return this.userRepository.find();
+  async findUsers(): Promise<UserDto[] | undefined> {
+    const users = await this.userRepository.find();
+    if (!users) return undefined;
+    return Mapper.mapArray(users, UserDto);
   }
 
-  async findById(id: string): Promise<User | undefined> {
-    return this.userRepository.findById(id);
+  async findById(id: string): Promise<UserDto | undefined> {
+    const user = await this.userRepository.findById(id);
+    if (!user) return undefined;
+    return Mapper.mapObject(user, new UserDto({}));
   }
 
-  async findByUsername(username: string): Promise<User | undefined> {
-    return this.userRepository.findByUsername(username);
+  async findByUsername(username: string): Promise<UserDto | undefined> {
+    const user = await this.userRepository.findByUsername(username);
+    if (!user) return undefined;
+    return Mapper.mapObject(user, new UserDto({}));
   }
 
-  async findByCriteria(criteria: IUsersCriteria): Promise<User[]> {
-    return this.userRepository.findByCriteria(criteria);
+  async findByCriteria(criteria: IUsersCriteria): Promise<UserDto[]> {
+    const users = await this.userRepository.findByCriteria(criteria);
+    if (!users) return new Array<UserDto>();
+    return Mapper.mapArray(users, UserDto);
   }
 }

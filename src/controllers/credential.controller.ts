@@ -5,10 +5,8 @@ import { ICredentialResetToken } from "../domain/entities/ICredentialResetToken"
 import { ICredentialResetTokenDto } from "../dtos/ICredentialResetTokenDto";
 import { ICredentialResetPasswordDto } from "../dtos/ICredentialResetPasswordDto";
 
-export class CredentialController {
-  constructor() {}
-  async requestPasswordReset(req: Request, res: Response) {
-    /*
+export async function requestPasswordReset(req: Request, res: Response) {
+  /*
   #swagger.summary = 'Solicitar restablecimiento de contraseña'
   #swagger.description = 'Endpoint para solicitar un restablecimiento de contraseña. Se genera un token y se envía al correo electrónico proporcionado.'
   #swagger.tags = ['Credenciales']
@@ -32,41 +30,41 @@ export class CredentialController {
   #swagger.responses[400] = { description: 'Error en la solicitud de restablecimiento de contraseña' }
   */
 
-    try {
-      const { email } = req.body;
-      const token = Math.random().toString(36).substring(2); // Generar un token simple
-      const now = new Date();
-      const expireAt = new Date(now.getTime() + 3600000); // Expira en 1 hora
-      const resetPasswordEntry: ICredentialResetToken = {
-        email: email,
-        token: token,
-        createdAt: now,
-        expireAt: expireAt,
-        usedAt: null,
-      };
+  try {
+    const { email } = req.body;
+    const token = Math.random().toString(36).substring(2); // Generar un token simple
+    const now = new Date();
+    const expireAt = new Date(now.getTime() + 3600000); // Expira en 1 hora
+    const resetPasswordEntry: ICredentialResetToken = {
+      email: email,
+      token: token,
+      createdAt: now,
+      expireAt: expireAt,
+      usedAt: null,
+    };
 
-      const service = new CredentialService(new CredentialRepository());
-      await service.createResetPasswordToken(resetPasswordEntry);
+    const service = new CredentialService(new CredentialRepository());
+    await service.createResetPasswordToken(resetPasswordEntry);
 
-      //TODO: enviar el correo electrónico con el token
-      console.log(`TODO:Enviar correo a ${email} con el token ${token}`);
+    //TODO: enviar el correo electrónico con el token
+    console.log(`TODO:Enviar correo a ${email} con el token ${token}`);
 
-      const response: ICredentialResetTokenDto = { ...resetPasswordEntry };
+    const response: ICredentialResetTokenDto = { ...resetPasswordEntry };
 
-      res.status(200).json(response);
-    } catch (error) {
-      console.error(
-        "Error al crear la entrada de restablecimiento de contraseña:",
-        error
-      );
-      res.status(400).json({
-        message: "Error en la solicitud de restablecimiento de contraseña",
-      });
-    }
+    res.status(200).json(response);
+  } catch (error) {
+    console.error(
+      "Error al crear la entrada de restablecimiento de contraseña:",
+      error
+    );
+    res.status(400).json({
+      message: "Error en la solicitud de restablecimiento de contraseña",
+    });
   }
+}
 
-  async resetPassword(req: Request, res: Response) {
-    /*
+export async function resetPassword(req: Request, res: Response) {
+  /*
   #swagger.summary = 'Restablecer contraseña'
   #swagger.description = 'Endpoint para restablecer la contraseña utilizando un token válido.'
   #swagger.tags = ['Credenciales']
@@ -89,48 +87,43 @@ export class CredentialController {
   }
   #swagger.responses[400] = { description: 'Error al restablecer la contraseña' }
   */
-    try {
-      const resetRequest: ICredentialResetPasswordDto = req.body;
-      const service = new CredentialService(new CredentialRepository());
-      const row = await service.findResetPasswordToken(
-        resetRequest.email,
-        resetRequest.token
-      );
+  try {
+    const resetRequest: ICredentialResetPasswordDto = req.body;
+    const service = new CredentialService(new CredentialRepository());
+    const row = await service.findResetPasswordToken(
+      resetRequest.email,
+      resetRequest.token
+    );
 
-      if (!row) {
-        return res.status(404).json({
-          message: "Solicitud de restablecimiento no encontrada o inválida",
-        });
-      }
-
-      if (new Date() > row.expireAt) {
-        return res.status(400).json({ message: "El token ha expirado" });
-      }
-
-      if (row.usedAt) {
-        return res
-          .status(400)
-          .json({ message: "El token ya ha sido utilizado" });
-      }
-
-      if (resetRequest.password !== resetRequest.confirmPassword) {
-        return res
-          .status(400)
-          .json({ message: "Las contraseñas no coinciden" });
-      }
-
-      await service.setNewPassword(resetRequest.email, resetRequest.password);
-
-      await service.setPaswordTokenUsed(resetRequest.email, resetRequest.token);
-
-      return res
-        .status(200)
-        .json({ message: "Contraseña actualizada correctamente" });
-    } catch (error) {
-      console.error("Error al restablecer la contraseña:", error);
-      return res
-        .status(500)
-        .json({ message: "Error al restablecer la contraseña" });
+    if (!row) {
+      return res.status(404).json({
+        message: "Solicitud de restablecimiento no encontrada o inválida",
+      });
     }
+
+    if (new Date() > row.expireAt) {
+      return res.status(400).json({ message: "El token ha expirado" });
+    }
+
+    if (row.usedAt) {
+      return res.status(400).json({ message: "El token ya ha sido utilizado" });
+    }
+
+    if (resetRequest.password !== resetRequest.confirmPassword) {
+      return res.status(400).json({ message: "Las contraseñas no coinciden" });
+    }
+
+    await service.setNewPassword(resetRequest.email, resetRequest.password);
+
+    await service.setPaswordTokenUsed(resetRequest.email, resetRequest.token);
+
+    return res
+      .status(200)
+      .json({ message: "Contraseña actualizada correctamente" });
+  } catch (error) {
+    console.error("Error al restablecer la contraseña:", error);
+    return res
+      .status(500)
+      .json({ message: "Error al restablecer la contraseña" });
   }
 }

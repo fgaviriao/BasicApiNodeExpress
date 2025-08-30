@@ -1,6 +1,7 @@
-import { IUser } from "../models/user.model";
+import { BaseModel } from "../domain/entities/BaseModel";
+import { IUser } from "../domain/entities/IUser";
 
-export class UserDto implements IUser {
+export class UserDto extends BaseModel implements Omit<IUser, "password"> {
   id: string = "";
   username: string = "";
   email: string = "";
@@ -10,9 +11,7 @@ export class UserDto implements IUser {
   isLocked: boolean = false;
 
   constructor(data: Partial<UserDto>) {
+    super();
     Object.assign(this, data);
-  }
-  static fromDomain(user: IUser): UserDto {
-    return new UserDto({ ...user });
   }
 }

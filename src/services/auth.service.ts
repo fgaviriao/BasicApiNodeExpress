@@ -20,6 +20,6 @@ export class AuthService {
     (this.userRepository as any).refreshTokens.push(token);
   }
   isRefreshTokenValid(token: string): boolean {
-    return (this.userRepository as any).refreshTokens.includes(token);
+    return this.userRepository.refreshTokens.includes(token);
   }
 }

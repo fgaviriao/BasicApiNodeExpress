@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "nodemon --watch src --exec ts-node src/index.ts"
+    "dev": "nodemon --watch src --exec ts-node src/index.ts",
+    "swagger": "node --trace-warnings ./src/docs/swagger.js"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +20,8 @@
     "jsonwebtoken": "^9.0.2",
     "mssql": "^11.0.1",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "yup": "^1.7.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

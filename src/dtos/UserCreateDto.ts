@@ -1,4 +1,3 @@
-import { IUserCreate } from "../domain/entities/IUser";
 import { IUserCreateDto } from "./IUserCreateDto";
 
 export class UserCreateDto implements IUserCreateDto {

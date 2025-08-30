@@ -1,16 +1,11 @@
-import { create } from "domain";
-import { ref } from "process";
 import swaggerAutogen from "swagger-autogen";
+import { credential } from "./definitions/credential.js";
+import { auth } from "./definitions/auth.js";
+import { user } from "./definitions/user.js";
 
 const outputFile = "./swagger.json";
-const endpointsFiles = [
-  "../routes/user.routes.ts",
-  "../routes/auth.routes.ts",
-  "../routes/credential.routes.ts",
-  "../controllers/user.controller.ts",
-  "../controllers/auth.controller.ts",
-  "../controllers/credential.controller.ts",
-];
+const endpointsFiles = ["../app.ts"];
+const definitions = { ...user, ...credential, ...auth };
 
 const doc = {
   info: {
@@ -20,7 +15,7 @@ const doc = {
     version: "1.0.0",
   },
   host: "localhost:4000",
-  basePath: "/api",
+  basePath: "/",
   schemes: ["http"],
   components: {
     securitySchemes: {
@@ -30,83 +25,9 @@ const doc = {
       },
     },
   },
-  definitions: {
-    User: {
-      id: 1,
-      username: "johndoe",
-      email: "correo@ejemplo.com",
-    },
-    Users: [
-      {
-        id: 1,
-        username: "johndoe",
-        email: "correo@ejemplo.com",
-      },
-    ],
-    CreateUserRequest: {
-      username: "johndoe",
-      email: "correo@ejemplo.com",
-      password: "password",
-      firstName: "John",
-      lastName: "Doe",
-    },
-    EditUserRequest: {
-      username: "johndoe",
-      email: "correo@ejemplo.com",
-      password: "password",
-      firstName: "John",
-      lastName: "Doe",
-      isActive: true,
-      isLocked: true,
-    },
-    EditUserActiveStateRequest: {
-      id: 1,
-      isActive: true,
-    },
-    EditUserLockedStateRequest: {
-      id: 1,
-      isLocked: true,
-    },
-    LoginRequest: {
-      username: "johndoe",
-      password: "password",
-    },
-    LoginResponse: {
-      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-      refreshToken: "d1f1e1c1-1a1a-1b1b-1c1c-1d1d1e1e1f1f",
-      expiresIn: 3600,
-    },
-    RefreshTokenRequest: {
-      refreshToken: "d1f1e1c1-1a1a-1b1b-1c1c-1d1d1e1e1f1f",
-    },
-    RefreshTokenResponse: {
-      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-      expiresIn: 3600,
-    },
-    Credentials: {
-      username: "johndoe",
-      password: "password",
-    },
-    ResetPasswordRequest: {
-      email: "correo@ejemplo.com",
-    },
-    ResetPasswordResponse: {
-      email: "correo@ejemplo.com",
-      createAt: "2024-01-01T00:00:00.000Z",
-      expireAt: "2024-01-01T01:00:00.000Z",
-    },
-    UpdatePasswordRequest: {
-      email: "correo@ejemplo.com",
-      password: "password",
-      confirmPassword: "password",
-      token: "d1f1e1c1-1a1a-1b1b-1c1c-1d1d1e1e1f1f",
-    },
-    UpdatePasswordResponse: {
-      message: "Contraseña actualizada correctamente",
-    },
-  },
+  definitions,
 };
 
-swaggerAutogen({ openapi: "3.0.0" })(outputFile, endpointsFiles, doc).then(
+swaggerAutogen({ openapi: "3.0.0" })(outputFile, endpointsFiles, doc).then(() =>
   console.log("Swagger generado")
 );

@@ -7,37 +7,39 @@ import { IUserCreateEntity, IUserEdit } from "../domain/entities/IUser";
 export class UserRespository implements IUserRepository {
   public refreshTokens: string[] = [];
   private readonly SQL_SEARCHED_FIELDS = `Id
-      ,Username
+      ,Username as username
       ,PasswordHash as password
-      ,Email
-      ,FirstName
-      ,LastName
-      ,CreatedDate
-      ,IsActive
-      ,IsLocked
+      ,Email as email
+      ,FirstName as firstName
+      ,LastName as lastName
+      ,IsActive as isActive
+      ,IsLocked as isLocked
       `;
 
   async create(user: IUserCreateEntity): Promise<User> {
-    const SQL_INSERT_USER = `INSERT INTO Users (Username, PasswordHash, email, FirstName, lastName) 
-  OUTPUT INSERTED.UserId VALUES (@username, @passwordHash, @email, @firstName, @lastName)`;
-
+    const SQL_INSERT_USER = `INSERT INTO Users (Username, PasswordHash, email, FirstName, lastName,IsActive, IsLocked, CreatedDate) 
+  OUTPUT INSERTED.Id VALUES (@username, @passwordHash, @email, @firstName, @lastName, 1, 0, GETDATE())`;
     const pool = await getConnection();
-    const result = await pool
-      .request()
-      .input("username", user.username)
-      .input("passwordHash", user.password)
-      .input("email", user.email)
-      .input("firstName", user.firstName)
-      .input("lastName", user.lastName)
-      .query(SQL_INSERT_USER);
-
-    const response: User = {
-      ...user,
-      id: result.recordset[0].id,
-      isActive: true,
-      isLocked: false,
-    } as User;
-    return response;
+    try {
+      const result = await pool
+        .request()
+        .input("username", user.username)
+        .input("passwordHash", user.password)
+        .input("email", user.email)
+        .input("firstName", user.firstName)
+        .input("lastName", user.lastName)
+        .query(SQL_INSERT_USER);
+      const response: User = {
+        ...user,
+        id: result.recordset[0].id,
+        isActive: true,
+        isLocked: false,
+      } as User;
+      return response;
+    } catch (error) {
+      console.error("Error inserting user:", error);
+      throw error;
+    }
   }
   async edit(user: IUserEdit): Promise<User | undefined> {
     const SQL_UPDDATE_USER = `UPDATE Users 
@@ -83,7 +85,7 @@ export class UserRespository implements IUserRepository {
   async find(): Promise<User[] | undefined> {
     const SQL = `SELECT ${this.SQL_SEARCHED_FIELDS} FROM Users`;
     const pool = await getConnection();
-    const result = await pool.request().query(SQL);
+    const result = await pool.request().query<User>(SQL);
     return result.recordset;
   }
 

@@ -1,30 +1,35 @@
 import { Router } from "express";
-import { UserController } from "../controllers/user.controller";
 import { authenticateToken } from "../middlewares/auth.middleware";
+import {
+  createUser,
+  editUser,
+  editUserActiveState,
+  editUserLockedState,
+  findUserByCriteria,
+  findUserById,
+  findUserByUsername,
+  findUsers,
+} from "../controllers/user.controller";
 
 const router = Router();
-const userController = new UserController();
 
-router.post("/users", authenticateToken, userController.createUser);
-router.put("/users", authenticateToken, userController.editUser);
+router.post("/users", authenticateToken, createUser);
+router.put("/users", authenticateToken, editUser);
 router.put(
   "/users/change_active_state",
   authenticateToken,
-  userController.editUserActiveState
+  editUserActiveState
 );
 router.put(
   "/users/change_locked_state",
   authenticateToken,
-  userController.editUserLockedState
+  editUserLockedState
 );
 
-router.get("/users", authenticateToken, userController.findUsers);
+router.get("/users", authenticateToken, findUsers);
 
-router.get("/users/:id", authenticateToken, userController.findUserById);
-router.get(
-  "/users/username/:username",
-  authenticateToken,
-  userController.findUserByUsername
-);
+router.get("/users/:id", authenticateToken, findUserById);
+router.get("/users/username/:username", authenticateToken, findUserByUsername);
+router.get("/users/criteria", authenticateToken, findUserByCriteria);
 
 export default router;

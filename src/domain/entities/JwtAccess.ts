@@ -1,3 +1,3 @@
 export class JwtAccess {
-  constructor(public accessToken: string, public refreshToken: string) {}
+  constructor(public token: string, public refreshToken: string) {}
 }

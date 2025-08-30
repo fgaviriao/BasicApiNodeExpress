@@ -7,11 +7,104 @@
   },
   "servers": [
     {
-      "url": "http://localhost:4000/api"
+      "url": "http://localhost:4000/"
     }
   ],
   "paths": {
-    "/users": {
+    "/api/login": {
+      "post": {
+        "tags": [
+          "Autenticación"
+        ],
+        "summary": "Iniciar sesión",
+        "description": "Endpoint para que los usuarios inicien sesión y obtengan tokens de acceso y actualización.",
+        "responses": {
+          "200": {
+            "description": "Inicio de sesión exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthLoginResponseDto"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthLoginResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Credenciales inválidas"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthLoginDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/refresh-token": {
+      "post": {
+        "tags": [
+          "Autenticación"
+        ],
+        "summary": "Refrescar token",
+        "description": "Endpoint para refrescar el token de acceso utilizando un token de actualización.",
+        "responses": {
+          "200": {
+            "description": "Token de acceso refrescado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthRefreshTokenResponseDto"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthRefreshTokenResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Refresh Token no proporcionado"
+          },
+          "403": {
+            "description": "Token inválido"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRefreshTokenDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users": {
       "post": {
         "tags": [
           "Usuarios"
@@ -33,30 +126,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Usuario creado"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
+                  "$ref": "#/components/schemas/UserDto"
                 }
               },
               "application/xml": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Usuario creado"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
+                  "$ref": "#/components/schemas/UserDto"
                 }
               }
             }
@@ -69,6 +144,9 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -81,7 +159,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserRequest"
+                "$ref": "#/components/schemas/UserCreateDto"
               }
             }
           }
@@ -144,6 +222,9 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -207,7 +288,7 @@
         ]
       }
     },
-    "/users/change_active_state": {
+    "/api/users/change_active_state": {
       "put": {
         "tags": [
           "Usuarios"
@@ -265,6 +346,9 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -284,7 +368,7 @@
         }
       }
     },
-    "/users/change_locked_state": {
+    "/api/users/change_locked_state": {
       "put": {
         "tags": [
           "Usuarios"
@@ -342,6 +426,9 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -361,7 +448,7 @@
         }
       }
     },
-    "/users/{id}": {
+    "/api/users/{id}": {
       "get": {
         "tags": [
           "Usuarios"
@@ -419,7 +506,7 @@
         ]
       }
     },
-    "/users/username/{username}": {
+    "/api/users/username/{username}": {
       "get": {
         "tags": [
           "Usuarios"
@@ -460,6 +547,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
           },
@@ -468,6 +558,9 @@
           },
           "404": {
             "description": "Usuario no encontrado"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -477,104 +570,13 @@
         ]
       }
     },
-    "/login": {
-      "post": {
-        "tags": [
-          "Autenticación"
-        ],
-        "summary": "Iniciar sesión",
-        "description": "Endpoint para que los usuarios inicien sesión y obtengan tokens de acceso y actualización.",
-        "responses": {
-          "200": {
-            "description": "Inicio de sesión exitoso",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Credenciales inválidas"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/refresh-token": {
-      "post": {
-        "tags": [
-          "Autenticación"
-        ],
-        "summary": "Refrescar token",
-        "description": "Endpoint para refrescar el token de acceso utilizando un token de actualización.",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Token de acceso refrescado",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RefreshTokenResponse"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/RefreshTokenResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Token no proporcionado"
-          },
-          "403": {
-            "description": "Token inválido"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "in": {
-                    "example": "any"
-                  },
-                  "description": {
-                    "example": "any"
-                  },
-                  "required": {
-                    "example": "any"
-                  },
-                  "schema": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/protected": {
+    "/api/users/criteria": {
       "get": {
-        "description": "",
+        "tags": [
+          "Usuarios"
+        ],
+        "summary": "Consulta usuarios por criterios",
+        "description": "Endpoint para obtener una lista de usuarios que cumplan con los criterios especificados.",
         "parameters": [
           {
             "name": "authorization",
@@ -586,7 +588,22 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Usuarios obtenidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error en la consulta"
           },
           "401": {
             "description": "Unauthorized"
@@ -594,10 +611,25 @@
           "403": {
             "description": "Forbidden"
           }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FindUsersByCriteriaRequest"
+              }
+            }
+          }
         }
       }
     },
-    "/credentials/request_password_reset": {
+    "/api/credentials/request_password_reset": {
       "post": {
         "tags": [
           "Credenciales"
@@ -636,7 +668,7 @@
         }
       }
     },
-    "/credentials/reset_password": {
+    "/api/credentials/reset_password": {
       "put": {
         "tags": [
           "Credenciales"
@@ -690,7 +722,7 @@
       }
     },
     "schemas": {
-      "User": {
+      "UserDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -704,10 +736,26 @@
           "email": {
             "type": "string",
             "example": "correo@ejemplo.com"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          },
+          "isLocked": {
+            "type": "boolean",
+            "example": true
           }
         },
         "xml": {
-          "name": "User"
+          "name": "UserDto"
         }
       },
       "Users": {
@@ -726,6 +774,22 @@
             "email": {
               "type": "string",
               "example": "correo@ejemplo.com"
+            },
+            "firstName": {
+              "type": "string",
+              "example": "John"
+            },
+            "lastName": {
+              "type": "string",
+              "example": "Doe"
+            },
+            "isActive": {
+              "type": "boolean",
+              "example": true
+            },
+            "isLocked": {
+              "type": "boolean",
+              "example": true
             }
           }
         },
@@ -733,7 +797,7 @@
           "name": "Users"
         }
       },
-      "CreateUserRequest": {
+      "UserCreateDto": {
         "type": "object",
         "properties": {
           "username": {
@@ -744,10 +808,6 @@
             "type": "string",
             "example": "correo@ejemplo.com"
           },
-          "password": {
-            "type": "string",
-            "example": "password"
-          },
           "firstName": {
             "type": "string",
             "example": "John"
@@ -755,10 +815,18 @@
           "lastName": {
             "type": "string",
             "example": "Doe"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "example": "password"
           }
         },
         "xml": {
-          "name": "CreateUserRequest"
+          "name": "UserCreateDto"
         }
       },
       "EditUserRequest": {
@@ -827,70 +895,6 @@
         },
         "xml": {
           "name": "EditUserLockedStateRequest"
-        }
-      },
-      "LoginRequest": {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string",
-            "example": "johndoe"
-          },
-          "password": {
-            "type": "string",
-            "example": "password"
-          }
-        },
-        "xml": {
-          "name": "LoginRequest"
-        }
-      },
-      "LoginResponse": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-          },
-          "refreshToken": {
-            "type": "string",
-            "example": "d1f1e1c1-1a1a-1b1b-1c1c-1d1d1e1e1f1f"
-          },
-          "expiresIn": {
-            "type": "number",
-            "example": 3600
-          }
-        },
-        "xml": {
-          "name": "LoginResponse"
-        }
-      },
-      "RefreshTokenRequest": {
-        "type": "object",
-        "properties": {
-          "refreshToken": {
-            "type": "string",
-            "example": "d1f1e1c1-1a1a-1b1b-1c1c-1d1d1e1e1f1f"
-          }
-        },
-        "xml": {
-          "name": "RefreshTokenRequest"
-        }
-      },
-      "RefreshTokenResponse": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-          },
-          "expiresIn": {
-            "type": "number",
-            "example": 3600
-          }
-        },
-        "xml": {
-          "name": "RefreshTokenResponse"
         }
       },
       "Credentials": {
@@ -975,6 +979,62 @@
         },
         "xml": {
           "name": "UpdatePasswordResponse"
+        }
+      },
+      "AuthLoginDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "johndoe"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          }
+        },
+        "xml": {
+          "name": "AuthLoginDto"
+        }
+      },
+      "AuthLoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "refreshToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "xml": {
+          "name": "AuthLoginResponseDto"
+        }
+      },
+      "AuthRefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "xml": {
+          "name": "AuthRefreshTokenDto"
+        }
+      },
+      "AuthRefreshTokenResponseDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "xml": {
+          "name": "AuthRefreshTokenResponseDto"
         }
       }
     }

@@ -2,6 +2,7 @@ import { IUserCreateEntity, IUserEdit } from "../entities/IUser";
 import { IUsersCriteria } from "../entities/IUserCriteria";
 import { User } from "../entities/User";
 export interface IUserRepository {
+  refreshTokens: string[];
   create(user: IUserCreateEntity): Promise<User>;
   edit(user: IUserEdit): Promise<User | undefined>;
   editActiveState(id: string, isActive: boolean): Promise<boolean>;

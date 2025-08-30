@@ -5,11 +5,14 @@ import { IUserCreateDto } from "../dtos/IUserCreateDto";
 import { IUserEdit } from "../domain/entities/IUser";
 import { IUserEditStateDto } from "../dtos/IUserEditStateDto";
 import { IUsersCriteria } from "../domain/entities/IUserCriteria";
+import { userCreateSchema } from "../validations/user.create.schema";
+import { userEditSchema } from "../validations/user.edit.schema";
+import { userSetActiveStateSchema } from "../validations/user.setactivestate.schema";
+import { userSetLockedStateSchema } from "../validations/user.setlockedstate.schema";
+import { findByIdSchema } from "../validations/common.findbyid.schema";
 
-export class UserController {
-  constructor() {}
-  async createUser(req: Request, res: Response) {
-    /*
+export async function createUser(req: Request, res: Response) {
+  /*
   #swagger.summary = 'Crear usuario'
   #swagger.description = 'Endpoint para crear un nuevo usuario en el sistema.'
   #swagger.tags = ['Usuarios']
@@ -22,18 +25,19 @@ export class UserController {
     required: true,
     content: {  
       "application/json": {
-        schema: {
-          $ref: "#/definitions/CreateUserRequest"
-        }
+        schema: {  $ref: "#/definitions/UserCreateDto"  }
       }
     }
   }
   #swagger.responses[201] = {
     description: 'Usuario creado exitosamente',
-    schema: { message: "Usuario creado" }
+    schema: { $ref:"#/definitions/UserDto" }
   }
   #swagger.responses[400] = { description: 'Error al crear el usuario' }
   */
+
+  try {
+    await userCreateSchema.validate(req.body, { abortEarly: false });
     const userReq: IUserCreateDto = req.body;
     const service = new UserService(new UserRespository());
     const user = await service.createUser(userReq);
@@ -41,11 +45,17 @@ export class UserController {
     if (!user) {
       return res.status(400).json({ message: "Error al crear el usuario" });
     }
-    res.status(201).json({ message: "Usuario creado" });
+    res.status(201).json({ message: "Usuario creado", user });
+  } catch (error: any) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ errors: error.errors });
+    }
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
+}
 
-  async editUser(req: Request, res: Response) {
-    /*
+export async function editUser(req: Request, res: Response) {
+  /*
   #swagger.summary = 'Editar usuario'
   #swagger.description = 'Endpoint para editar la información de un usuario existente.'
   #swagger.tags = ['Usuarios']
@@ -70,6 +80,8 @@ export class UserController {
   }
   #swagger.responses[400] = { description: 'Error al editar el usuario' }
   */
+  try {
+    await userEditSchema.validate(req.body, { abortEarly: false });
     const userReq: IUserEdit = req.body;
     const service = new UserService(new UserRespository());
     const user = await service.editUser(userReq);
@@ -77,10 +89,16 @@ export class UserController {
       return res.status(400).json({ message: "Error al editar el usuario" });
     }
     return res.status(200).json({ message: "Usuario editado" });
+  } catch (error: any) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ errors: error.errors });
+    }
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
+}
 
-  async editUserActiveState(req: Request, res: Response) {
-    /*
+export async function editUserActiveState(req: Request, res: Response) {
+  /*
   #swagger.summary = 'Cambiar estado activo del usuario'
   #swagger.description = 'Endpoint para cambiar el estado activo de un usuario.'
   #swagger.tags = ['Usuarios']
@@ -105,6 +123,8 @@ export class UserController {
   }
   #swagger.responses[400] = { description: 'Error al cambiar el estado del usuario' }
   */
+  try {
+    await userSetActiveStateSchema.validate(req.body, { abortEarly: false });
     const { id, state } = req.body as IUserEditStateDto;
     const service = new UserService(new UserRespository());
     const user = await service.setActiveState(id, state);
@@ -114,10 +134,16 @@ export class UserController {
         .json({ message: "Error al cambiar el estado del usuario" });
     }
     return res.status(200).json({ message: "Estado del usuario cambiado" });
+  } catch (error: any) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ errors: error.errors });
+    }
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
+}
 
-  async editUserLockedState(req: Request, res: Response) {
-    /*
+export async function editUserLockedState(req: Request, res: Response) {
+  /*
   #swagger.summary = 'Cambiar estado bloqueado del usuario'
   #swagger.description = 'Endpoint para cambiar el estado bloqueado de un usuario.'
   #swagger.tags = ['Usuarios']
@@ -142,6 +168,8 @@ export class UserController {
   }
   #swagger.responses[400] = { description: 'Error al cambiar el estado del usuario' }
   */
+  try {
+    await userSetLockedStateSchema.validate(req.body, { abortEarly: false });
     const { id, state } = req.body as IUserEditStateDto;
     const service = new UserService(new UserRespository());
     const user = await service.setLockedState(id, state);
@@ -151,10 +179,16 @@ export class UserController {
         .json({ message: "Error al cambiar el estado del usuario" });
     }
     return res.status(200).json({ message: "Estado del usuario cambiado" });
+  } catch (error: any) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ errors: error.errors });
+    }
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
+}
 
-  async findUsers(req: Request, res: Response) {
-    /*
+export async function findUsers(req: Request, res: Response) {
+  /*
   #swagger.summary = 'Consulta todos los usuarios'
   #swagger.description = 'Endpoint para obtener una lista de todos los usuarios registrados en el sistema.'
   #swagger.tags = ['Usuarios']
@@ -165,14 +199,14 @@ export class UserController {
       description: 'usuarios obtenidos',
       schema: { $ref: '#/definitions/Users' }
 } */
-    res.setHeader("Content-Type", "application/json");
-    const service = new UserService(new UserRespository());
-    const users = await service.findUsers();
-    res.status(200).json(users);
-  }
+  res.setHeader("Content-Type", "application/json");
+  const service = new UserService(new UserRespository());
+  const users = await service.findUsers();
+  res.status(200).json(users);
+}
 
-  async findUserByUsername(req: Request, res: Response) {
-    /*
+export async function findUserByUsername(req: Request, res: Response) {
+  /*
   #swagger.summary = 'Consulta usuario por nombre de usuario'
   #swagger.description = 'Endpoint para obtener un usuario por su nombre de usuario.'
   #swagger.tags = ['Usuarios']
@@ -191,14 +225,21 @@ export class UserController {
   }
   #swagger.responses[404] = { description: 'Usuario no encontrado' }
   */
+  try {
     const username = req.params.username as string;
     const service = new UserService(new UserRespository());
     const users = await service.findByUsername(username);
     res.status(200).json(users);
+  } catch (error: any) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ errors: error.errors });
+    }
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
+}
 
-  async findUserById(req: Request, res: Response) {
-    /*
+export async function findUserById(req: Request, res: Response) {
+  /*
   #swagger.summary = 'Consulta usuario por ID'
   #swagger.description = 'Endpoint para obtener un usuario por su ID.'
   #swagger.tags = ['Usuarios']
@@ -217,23 +258,21 @@ export class UserController {
   }
   #swagger.responses[404] = { description: 'Usuario no encontrado' }
   */
-    const id = req.params.id as string;
-    const service = new UserService(new UserRespository());
-    const users = await service.findById(id);
-    res.status(200).json(users);
-  }
+  await findByIdSchema.validate(req.params, { abortEarly: false });
+  const id = req.params.id as string;
+  const service = new UserService(new UserRespository());
+  const users = await service.findById(id);
+  res.status(200).json(users);
+}
 
-  async findUserByCriteria(req: Request, res: Response) {
-    /*
+export async function findUserByCriteria(req: Request, res: Response) {
+  /*
   #swagger.summary = 'Consulta usuarios por criterios'
   #swagger.description = 'Endpoint para obtener una lista de usuarios que cumplan con los criterios especificados.'
   #swagger.tags = ['Usuarios']
   #swagger.security = [{
             "bearerAuth": []
     }]
-  #swagger.security = [{
-            "bearerAuth": []
-    }] 
   #swagger.consumes = ['application/json']
   #swagger.produces = ['application/json']
   #swagger.requestBody  = {
@@ -252,9 +291,8 @@ export class UserController {
   }
   #swagger.responses[400] = { description: 'Error en la consulta' }
   */
-    const userCriteria: IUsersCriteria = req.body;
-    const service = new UserService(new UserRespository());
-    const users = await service.findByCriteria(userCriteria);
-    res.status(200).json(users);
-  }
+  const userCriteria: IUsersCriteria = req.body;
+  const service = new UserService(new UserRespository());
+  const users = await service.findByCriteria(userCriteria);
+  res.status(200).json(users);
 }
