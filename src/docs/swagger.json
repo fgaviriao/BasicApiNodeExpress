@@ -1,14 +1,14 @@
 {
-  "openapi": "3.0.0",
+  "swagger": "2.0",
   "info": {
     "title": "API Template",
     "description": "Plantilla de API con Node, Express y TypeScript para iniciar proyectos rápidamente.",
     "version": "1.0.0"
   },
-  "servers": [
-    {
-      "url": "http://localhost:4000/"
-    }
+  "host": "localhost:4000",
+  "basePath": "/",
+  "schemes": [
+    "http"
   ],
   "paths": {
     "/api/login": {
@@ -18,20 +18,17 @@
         ],
         "summary": "Iniciar sesión",
         "description": "Endpoint para que los usuarios inicien sesión y obtengan tokens de acceso y actualización.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Inicio de sesión exitoso",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthLoginResponseDto"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthLoginResponseDto"
-                }
-              }
+            "schema": {
+              "$ref": "#/definitions/AuthLoginResponseDto"
             }
           },
           "400": {
@@ -49,7 +46,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AuthLoginDto"
+                "$ref": "#/definitions/AuthLoginDto"
               }
             }
           }
@@ -66,17 +63,8 @@
         "responses": {
           "200": {
             "description": "Token de acceso refrescado",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthRefreshTokenResponseDto"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthRefreshTokenResponseDto"
-                }
-              }
+            "schema": {
+              "$ref": "#/definitions/AuthRefreshTokenResponseDto"
             }
           },
           "400": {
@@ -97,7 +85,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AuthRefreshTokenDto"
+                "$ref": "#/definitions/AuthRefreshTokenDto"
               }
             }
           }
@@ -111,29 +99,24 @@
         ],
         "summary": "Crear usuario",
         "description": "Endpoint para crear un nuevo usuario en el sistema.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "schema": {
-              "type": "string"
-            }
+            "type": "string"
           }
         ],
         "responses": {
           "201": {
             "description": "Usuario creado exitosamente",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserDto"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserDto"
-                }
-              }
+            "schema": {
+              "$ref": "#/definitions/UserDto"
             }
           },
           "400": {
@@ -159,7 +142,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserCreateDto"
+                "$ref": "#/definitions/UserCreateDto"
               }
             }
           }
@@ -171,46 +154,32 @@
         ],
         "summary": "Editar usuario",
         "description": "Endpoint para editar la información de un usuario existente.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "schema": {
-              "type": "string"
-            }
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "Usuario editado exitosamente",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Usuario editado"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Usuario editado"
                 }
               },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Usuario editado"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
+              "xml": {
+                "name": "main"
               }
             }
           },
@@ -237,7 +206,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EditUserRequest"
+                "$ref": "#/definitions/EditUserRequest"
               }
             }
           }
@@ -249,29 +218,21 @@
         ],
         "summary": "Consulta todos los usuarios",
         "description": "Endpoint para obtener una lista de todos los usuarios registrados en el sistema.",
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "schema": {
-              "type": "string"
-            }
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "usuarios obtenidos",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Users"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/Users"
-                }
-              }
+            "schema": {
+              "$ref": "#/definitions/Users"
             }
           },
           "401": {
@@ -295,46 +256,32 @@
         ],
         "summary": "Cambiar estado activo del usuario",
         "description": "Endpoint para cambiar el estado activo de un usuario.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "schema": {
-              "type": "string"
-            }
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "Estado del usuario cambiado exitosamente",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Estado del usuario cambiado"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Estado del usuario cambiado"
                 }
               },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Estado del usuario cambiado"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
+              "xml": {
+                "name": "main"
               }
             }
           },
@@ -361,7 +308,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EditUserActiveStateRequest"
+                "$ref": "#/definitions/EditUserActiveStateRequest"
               }
             }
           }
@@ -375,46 +322,32 @@
         ],
         "summary": "Cambiar estado bloqueado del usuario",
         "description": "Endpoint para cambiar el estado bloqueado de un usuario.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "schema": {
-              "type": "string"
-            }
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "Estado del usuario cambiado exitosamente",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Estado del usuario cambiado"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Estado del usuario cambiado"
                 }
               },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Estado del usuario cambiado"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
+              "xml": {
+                "name": "main"
               }
             }
           },
@@ -441,7 +374,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EditUserLockedStateRequest"
+                "$ref": "#/definitions/EditUserLockedStateRequest"
               }
             }
           }
@@ -460,33 +393,20 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            },
+            "type": "string",
             "description": "ID del usuario a buscar"
           },
           {
             "name": "authorization",
             "in": "header",
-            "schema": {
-              "type": "string"
-            }
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "Usuario obtenido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
+            "schema": {
+              "$ref": "#/definitions/User"
             }
           },
           "401": {
@@ -518,33 +438,20 @@
             "name": "username",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            },
+            "type": "string",
             "description": "Nombre de usuario del usuario a buscar"
           },
           {
             "name": "authorization",
             "in": "header",
-            "schema": {
-              "type": "string"
-            }
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "Usuario obtenido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
+            "schema": {
+              "$ref": "#/definitions/User"
             }
           },
           "400": {
@@ -577,29 +484,24 @@
         ],
         "summary": "Consulta usuarios por criterios",
         "description": "Endpoint para obtener una lista de usuarios que cumplan con los criterios especificados.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "schema": {
-              "type": "string"
-            }
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "Usuarios obtenidos",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Users"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/Users"
-                }
-              }
+            "schema": {
+              "$ref": "#/definitions/Users"
             }
           },
           "400": {
@@ -622,7 +524,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/FindUsersByCriteriaRequest"
+                "$ref": "#/definitions/FindUsersByCriteriaRequest"
               }
             }
           }
@@ -636,20 +538,17 @@
         ],
         "summary": "Solicitar restablecimiento de contraseña",
         "description": "Endpoint para solicitar un restablecimiento de contraseña. Se genera un token y se envía al correo electrónico proporcionado.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Solicitud de restablecimiento de contraseña exitosa",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResetPasswordResponse"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResetPasswordResponse"
-                }
-              }
+            "schema": {
+              "$ref": "#/definitions/ResetPasswordResponse"
             }
           },
           "400": {
@@ -661,7 +560,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ResetPasswordRequest"
+                "$ref": "#/definitions/ResetPasswordRequest"
               }
             }
           }
@@ -675,20 +574,17 @@
         ],
         "summary": "Restablecer contraseña",
         "description": "Endpoint para restablecer la contraseña utilizando un token válido.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Contraseña actualizada correctamente",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UpdatePasswordResponse"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/UpdatePasswordResponse"
-                }
-              }
+            "schema": {
+              "$ref": "#/definitions/UpdatePasswordResponse"
             }
           },
           "400": {
@@ -706,10 +602,282 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdatePasswordRequest"
+                "$ref": "#/definitions/UpdatePasswordRequest"
               }
             }
           }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "UserDto": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "username": {
+          "type": "string",
+          "example": "johndoe"
+        },
+        "email": {
+          "type": "string",
+          "example": "correo@ejemplo.com"
+        },
+        "firstName": {
+          "type": "string",
+          "example": "John"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Doe"
+        },
+        "isActive": {
+          "type": "boolean",
+          "example": true
+        },
+        "isLocked": {
+          "type": "boolean",
+          "example": true
+        }
+      }
+    },
+    "Users": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "username": {
+            "type": "string",
+            "example": "johndoe"
+          },
+          "email": {
+            "type": "string",
+            "example": "correo@ejemplo.com"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          },
+          "isLocked": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      }
+    },
+    "UserCreateDto": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "johndoe"
+        },
+        "email": {
+          "type": "string",
+          "example": "correo@ejemplo.com"
+        },
+        "firstName": {
+          "type": "string",
+          "example": "John"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Doe"
+        },
+        "password": {
+          "type": "string",
+          "example": "password"
+        },
+        "confirmPassword": {
+          "type": "string",
+          "example": "password"
+        }
+      }
+    },
+    "EditUserRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "johndoe"
+        },
+        "email": {
+          "type": "string",
+          "example": "correo@ejemplo.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "password"
+        },
+        "firstName": {
+          "type": "string",
+          "example": "John"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Doe"
+        },
+        "isActive": {
+          "type": "boolean",
+          "example": true
+        },
+        "isLocked": {
+          "type": "boolean",
+          "example": true
+        }
+      }
+    },
+    "EditUserActiveStateRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "isActive": {
+          "type": "boolean",
+          "example": true
+        }
+      }
+    },
+    "EditUserLockedStateRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "isLocked": {
+          "type": "boolean",
+          "example": true
+        }
+      }
+    },
+    "Credentials": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "johndoe"
+        },
+        "password": {
+          "type": "string",
+          "example": "password"
+        }
+      }
+    },
+    "ResetPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "correo@ejemplo.com"
+        }
+      }
+    },
+    "ResetPasswordResponse": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "correo@ejemplo.com"
+        },
+        "createAt": {
+          "type": "string",
+          "example": "2024-01-01T00:00:00.000Z"
+        },
+        "expireAt": {
+          "type": "string",
+          "example": "2024-01-01T01:00:00.000Z"
+        }
+      }
+    },
+    "UpdatePasswordRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "correo@ejemplo.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "password"
+        },
+        "confirmPassword": {
+          "type": "string",
+          "example": "password"
+        },
+        "token": {
+          "type": "string",
+          "example": "d1f1e1c1-1a1a-1b1b-1c1c-1d1d1e1e1f1f"
+        }
+      }
+    },
+    "UpdatePasswordResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "Contraseña actualizada correctamente"
+        }
+      }
+    },
+    "AuthLoginDto": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "johndoe"
+        },
+        "password": {
+          "type": "string",
+          "example": "password"
+        }
+      }
+    },
+    "AuthLoginResponseDto": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        },
+        "refreshToken": {
+          "type": "string",
+          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        }
+      }
+    },
+    "AuthRefreshTokenDto": {
+      "type": "object",
+      "properties": {
+        "refreshToken": {
+          "type": "string",
+          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        }
+      }
+    },
+    "AuthRefreshTokenResponseDto": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         }
       }
     }
@@ -719,323 +887,6 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer"
-      }
-    },
-    "schemas": {
-      "UserDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "example": 1
-          },
-          "username": {
-            "type": "string",
-            "example": "johndoe"
-          },
-          "email": {
-            "type": "string",
-            "example": "correo@ejemplo.com"
-          },
-          "firstName": {
-            "type": "string",
-            "example": "John"
-          },
-          "lastName": {
-            "type": "string",
-            "example": "Doe"
-          },
-          "isActive": {
-            "type": "boolean",
-            "example": true
-          },
-          "isLocked": {
-            "type": "boolean",
-            "example": true
-          }
-        },
-        "xml": {
-          "name": "UserDto"
-        }
-      },
-      "Users": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "number",
-              "example": 1
-            },
-            "username": {
-              "type": "string",
-              "example": "johndoe"
-            },
-            "email": {
-              "type": "string",
-              "example": "correo@ejemplo.com"
-            },
-            "firstName": {
-              "type": "string",
-              "example": "John"
-            },
-            "lastName": {
-              "type": "string",
-              "example": "Doe"
-            },
-            "isActive": {
-              "type": "boolean",
-              "example": true
-            },
-            "isLocked": {
-              "type": "boolean",
-              "example": true
-            }
-          }
-        },
-        "xml": {
-          "name": "Users"
-        }
-      },
-      "UserCreateDto": {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string",
-            "example": "johndoe"
-          },
-          "email": {
-            "type": "string",
-            "example": "correo@ejemplo.com"
-          },
-          "firstName": {
-            "type": "string",
-            "example": "John"
-          },
-          "lastName": {
-            "type": "string",
-            "example": "Doe"
-          },
-          "password": {
-            "type": "string",
-            "example": "password"
-          },
-          "confirmPassword": {
-            "type": "string",
-            "example": "password"
-          }
-        },
-        "xml": {
-          "name": "UserCreateDto"
-        }
-      },
-      "EditUserRequest": {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string",
-            "example": "johndoe"
-          },
-          "email": {
-            "type": "string",
-            "example": "correo@ejemplo.com"
-          },
-          "password": {
-            "type": "string",
-            "example": "password"
-          },
-          "firstName": {
-            "type": "string",
-            "example": "John"
-          },
-          "lastName": {
-            "type": "string",
-            "example": "Doe"
-          },
-          "isActive": {
-            "type": "boolean",
-            "example": true
-          },
-          "isLocked": {
-            "type": "boolean",
-            "example": true
-          }
-        },
-        "xml": {
-          "name": "EditUserRequest"
-        }
-      },
-      "EditUserActiveStateRequest": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "example": 1
-          },
-          "isActive": {
-            "type": "boolean",
-            "example": true
-          }
-        },
-        "xml": {
-          "name": "EditUserActiveStateRequest"
-        }
-      },
-      "EditUserLockedStateRequest": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "example": 1
-          },
-          "isLocked": {
-            "type": "boolean",
-            "example": true
-          }
-        },
-        "xml": {
-          "name": "EditUserLockedStateRequest"
-        }
-      },
-      "Credentials": {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string",
-            "example": "johndoe"
-          },
-          "password": {
-            "type": "string",
-            "example": "password"
-          }
-        },
-        "xml": {
-          "name": "Credentials"
-        }
-      },
-      "ResetPasswordRequest": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "example": "correo@ejemplo.com"
-          }
-        },
-        "xml": {
-          "name": "ResetPasswordRequest"
-        }
-      },
-      "ResetPasswordResponse": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "example": "correo@ejemplo.com"
-          },
-          "createAt": {
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "expireAt": {
-            "type": "string",
-            "example": "2024-01-01T01:00:00.000Z"
-          }
-        },
-        "xml": {
-          "name": "ResetPasswordResponse"
-        }
-      },
-      "UpdatePasswordRequest": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "example": "correo@ejemplo.com"
-          },
-          "password": {
-            "type": "string",
-            "example": "password"
-          },
-          "confirmPassword": {
-            "type": "string",
-            "example": "password"
-          },
-          "token": {
-            "type": "string",
-            "example": "d1f1e1c1-1a1a-1b1b-1c1c-1d1d1e1e1f1f"
-          }
-        },
-        "xml": {
-          "name": "UpdatePasswordRequest"
-        }
-      },
-      "UpdatePasswordResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Contraseña actualizada correctamente"
-          }
-        },
-        "xml": {
-          "name": "UpdatePasswordResponse"
-        }
-      },
-      "AuthLoginDto": {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string",
-            "example": "johndoe"
-          },
-          "password": {
-            "type": "string",
-            "example": "password"
-          }
-        },
-        "xml": {
-          "name": "AuthLoginDto"
-        }
-      },
-      "AuthLoginResponseDto": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-          },
-          "refreshToken": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-          }
-        },
-        "xml": {
-          "name": "AuthLoginResponseDto"
-        }
-      },
-      "AuthRefreshTokenDto": {
-        "type": "object",
-        "properties": {
-          "refreshToken": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-          }
-        },
-        "xml": {
-          "name": "AuthRefreshTokenDto"
-        }
-      },
-      "AuthRefreshTokenResponseDto": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-          }
-        },
-        "xml": {
-          "name": "AuthRefreshTokenResponseDto"
-        }
       }
     }
   }

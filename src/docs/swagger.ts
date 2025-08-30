@@ -1,7 +1,7 @@
-import swaggerAutogen from "swagger-autogen";
-import { credential } from "./definitions/credential.js";
-import { auth } from "./definitions/auth.js";
-import { user } from "./definitions/user.js";
+const swaggerAutogen = require("swagger-autogen")();
+const { credential } = require("./definitions/credential.ts");
+const { auth } = require("./definitions/auth.ts");
+const { user } = require("./definitions/user.ts");
 
 const outputFile = "./swagger.json";
 const endpointsFiles = ["../app.ts"];
@@ -27,7 +27,4 @@ const doc = {
   },
   definitions,
 };
-
-swaggerAutogen({ openapi: "3.0.0" })(outputFile, endpointsFiles, doc).then(() =>
-  console.log("Swagger generado")
-);
+swaggerAutogen(outputFile, endpointsFiles, doc);
