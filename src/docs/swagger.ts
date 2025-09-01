@@ -2,10 +2,11 @@ const swaggerAutogen = require("swagger-autogen")();
 const { credential } = require("./definitions/credential.ts");
 const { auth } = require("./definitions/auth.ts");
 const { user } = require("./definitions/user.ts");
+const { common } = require("./definitions/common.ts");
 
 const outputFile = "./swagger.json";
 const endpointsFiles = ["../app.ts"];
-const definitions = { ...user, ...credential, ...auth };
+const definitions = { ...common, ...user, ...credential, ...auth };
 
 const doc = {
   info: {
@@ -27,4 +28,5 @@ const doc = {
   },
   definitions,
 };
+console.log("Generado a las:", new Date().toLocaleString());
 swaggerAutogen(outputFile, endpointsFiles, doc);

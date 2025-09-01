@@ -55,6 +55,12 @@ export class UserService {
     return Mapper.mapObject(user, new UserDto({}));
   }
 
+  async findByEmail(email: string): Promise<UserDto | undefined> {
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) return undefined;
+    return Mapper.mapObject(user, new UserDto({}));
+  }
+
   async findByCriteria(criteria: IUsersCriteria): Promise<UserDto[]> {
     const users = await this.userRepository.findByCriteria(criteria);
     if (!users) return new Array<UserDto>();

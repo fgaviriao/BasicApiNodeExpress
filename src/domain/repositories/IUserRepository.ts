@@ -10,5 +10,6 @@ export interface IUserRepository {
   find(): Promise<User[] | undefined>;
   findById(id: string): Promise<User | undefined>;
   findByUsername(username: string): Promise<User | undefined>;
+  findByEmail(email: string): Promise<User | undefined>;
   findByCriteria(criteria: IUsersCriteria): Promise<User[]>;
 }

@@ -111,6 +111,17 @@ export class UserRespository implements IUserRepository {
 
     return row as User;
   }
+  async findByEmail(email: string): Promise<User | undefined> {
+    const SQL = `SELECT ${this.SQL_SEARCHED_FIELDS} FROM Users WHERE email = @email`;
+    const pool = await getConnection();
+    const result = await pool.request().input("email", email).query(SQL);
+
+    const row = result.recordset[0];
+
+    if (!row) return undefined;
+
+    return row as User;
+  }
   async findByCriteria(criteria: IUsersCriteria): Promise<User[]> {
     const pool = await getConnection();
     const request = pool.request();

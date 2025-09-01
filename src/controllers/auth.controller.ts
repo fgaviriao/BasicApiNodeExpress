@@ -6,6 +6,7 @@ import { AuthLoginDto } from "../dtos/AuthLoginDto";
 import { authLoginSchema } from "../validations/auth.login.schema";
 import { authRefreshTokenSchema } from "../validations/auth.refreshtoken.schema";
 import { AuthRefreshTokenDto } from "../dtos/AuthRefreshTokenDto";
+import { CommonResponseDto } from "../dtos/CommonResponseDto";
 
 export async function login(req: Request, res: Response) {
   /*
@@ -14,21 +15,23 @@ export async function login(req: Request, res: Response) {
   #swagger.tags = ['Autenticación']
   #swagger.consumes = ['application/json']
   #swagger.produces = ['application/json']
-  #swagger.requestBody  = {
-    required: true,
-    content: {
-      "application/json": {
-        schema: {
-          $ref: "#/definitions/AuthLoginDto"
-        }
-      }
-    }
+  #swagger.parameters['body'] = {
+    in: 'body',
+    description: 'request',
+    schema: { $ref: '#/definitions/AuthLoginDto' }
   }
   #swagger.responses[200] = {
     description: 'Inicio de sesión exitoso',
-    schema: { $ref: '#/definitions/AuthLoginResponseDto' }
+    schema: { $ref: '#/definitions/defaultResponse' }
   }
-  #swagger.responses[401] = { description: 'Credenciales inválidas' }
+  #swagger.responses[400] = { 
+    description: 'Errores de validación', 
+    schema: {$ref: '#/definitions/validationsErrors'}
+  }    
+  #swagger.responses[401] = { 
+    description: 'Credenciales inválidas', 
+    schema: { $ref: '#/definitions/defaultResponse' }
+  }
   */
   try {
     await authLoginSchema.validate(req.body, { abortEarly: false });
@@ -45,7 +48,9 @@ export async function login(req: Request, res: Response) {
     if (error.name === "ValidationError") {
       return res.status(400).json({ errors: error.errors });
     }
-    return res.status(500).json({ message: "Error interno del servidor" });
+    return res
+      .status(500)
+      .json(new CommonResponseDto("Error interno del servidor"));
   }
 }
 export async function refreshToken(req: Request, res: Response) {
@@ -53,22 +58,23 @@ export async function refreshToken(req: Request, res: Response) {
   #swagger.summary = 'Refrescar token'
   #swagger.description = 'Endpoint para refrescar el token de acceso utilizando un token de actualización.'
   #swagger.tags = ['Autenticación']
-  #swagger.requestBody  = {
-    required: true,
-    content: {
-      "application/json": {
-        schema: {
-          $ref: "#/definitions/AuthRefreshTokenDto"
-        }
-      }
-    }
-  }
+  #swagger.parameters['body'] = {
+    in: 'body',
+    description: 'request',
+    schema: { $ref: '#/definitions/AuthRefreshTokenDto' }
+  }  
   #swagger.responses[200] = {
-      description: 'Token de acceso refrescado',
-      schema: { $ref: '#/definitions/AuthRefreshTokenResponseDto' }
+    description: 'Token de acceso refrescado',
+    schema: { $ref: '#/definitions/AuthRefreshTokenResponseDto' }
   }
-  #swagger.responses[401] = { description: 'Refresh Token no proporcionado' }
-  #swagger.responses[403] = { description: 'Token inválido' }
+  #swagger.responses[400] = { 
+    description: 'Errores de validación', 
+    schema: {$ref: '#/definitions/validationsErrors'}
+  }
+  #swagger.responses[403] = { 
+    description: 'Token inválido', 
+    schema: { $ref: '#/definitions/defaultResponse'}
+    }
   */
   try {
     await authRefreshTokenSchema.validate(req.body, { abortEarly: false });
@@ -76,7 +82,7 @@ export async function refreshToken(req: Request, res: Response) {
     const service = new AuthService(new UserRespository());
 
     if (!service.isRefreshTokenValid(authReq.refreshToken))
-      return res.sendStatus(403).json({ message: "Token inválido" });
+      return res.sendStatus(403).json(new CommonResponseDto("Token inválido"));
 
     const { id, username } = JwtPayload.verifyRefreshToken(
       authReq.refreshToken
@@ -88,6 +94,8 @@ export async function refreshToken(req: Request, res: Response) {
     if (error.name === "ValidationError") {
       return res.status(400).json({ errors: error.errors });
     }
-    return res.status(500).json({ message: "Error interno del servidor" });
+    return res
+      .status(500)
+      .json(new CommonResponseDto("Error interno del servidor"));
   }
 }

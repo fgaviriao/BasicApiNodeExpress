@@ -24,31 +24,37 @@
         "produces": [
           "application/json"
         ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "request",
+            "schema": {
+              "$ref": "#/definitions/AuthLoginDto"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Inicio de sesión exitoso",
             "schema": {
-              "$ref": "#/definitions/AuthLoginResponseDto"
+              "$ref": "#/definitions/defaultResponse"
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Errores de validación",
+            "schema": {
+              "$ref": "#/definitions/validationsErrors"
+            }
           },
           "401": {
-            "description": "Credenciales inválidas"
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/defaultResponse"
+            }
           },
           "500": {
             "description": "Internal Server Error"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/definitions/AuthLoginDto"
-              }
-            }
           }
         }
       }
@@ -60,6 +66,16 @@
         ],
         "summary": "Refrescar token",
         "description": "Endpoint para refrescar el token de acceso utilizando un token de actualización.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "request",
+            "schema": {
+              "$ref": "#/definitions/AuthRefreshTokenDto"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Token de acceso refrescado",
@@ -68,26 +84,19 @@
             }
           },
           "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Refresh Token no proporcionado"
+            "description": "Errores de validación",
+            "schema": {
+              "$ref": "#/definitions/validationsErrors"
+            }
           },
           "403": {
-            "description": "Token inválido"
+            "description": "Token inválido",
+            "schema": {
+              "$ref": "#/definitions/defaultResponse"
+            }
           },
           "500": {
             "description": "Internal Server Error"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/definitions/AuthRefreshTokenDto"
-              }
-            }
           }
         }
       }
@@ -536,32 +545,41 @@
         "tags": [
           "Credenciales"
         ],
-        "summary": "Solicitar restablecimiento de contraseña",
-        "description": "Endpoint para solicitar un restablecimiento de contraseña. Se genera un token y se envía al correo electrónico proporcionado.",
+        "summary": "Solicitud de restablecimiento de contraseña",
+        "description": "",
         "consumes": [
           "application/json"
         ],
         "produces": [
           "application/json"
         ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "request",
+            "schema": {
+              "$ref": "#/definitions/CredentialRequestPasswordResetDto"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Solicitud de restablecimiento de contraseña exitosa",
             "schema": {
-              "$ref": "#/definitions/ResetPasswordResponse"
+              "$ref": "#/definitions/CredentialRequestPasswordResetResponseDto"
             }
           },
           "400": {
-            "description": "Error en la solicitud de restablecimiento de contraseña"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/definitions/ResetPasswordRequest"
-              }
+            "description": "Errores de validación",
+            "schema": {
+              "$ref": "#/definitions/validationsErrors"
+            }
+          },
+          "404": {
+            "description": "Correo no registrado",
+            "schema": {
+              "$ref": "#/definitions/defaultResponse"
             }
           }
         }
@@ -580,37 +598,67 @@
         "produces": [
           "application/json"
         ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "request",
+            "schema": {
+              "$ref": "#/definitions/CredentialRequestPasswordResetDto"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Contraseña actualizada correctamente",
             "schema": {
-              "$ref": "#/definitions/UpdatePasswordResponse"
+              "$ref": "#/definitions/defaultResponse"
             }
           },
           "400": {
-            "description": "Error al restablecer la contraseña"
+            "description": "Errores de validación",
+            "schema": {
+              "$ref": "#/definitions/validationsErrors"
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "Solicitud no encontrada",
+            "schema": {
+              "$ref": "#/definitions/validationsErrors"
+            }
           },
           "500": {
             "description": "Internal Server Error"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/definitions/UpdatePasswordRequest"
-              }
-            }
           }
         }
       }
     }
   },
   "definitions": {
+    "defaultResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "respuesta de la acción"
+        }
+      }
+    },
+    "validationsErrors": {
+      "type": "object",
+      "properties": {
+        "erros": {
+          "type": "array",
+          "example": [
+            "error1",
+            "error2"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "UserDto": {
       "type": "object",
       "properties": {
@@ -781,7 +829,7 @@
         }
       }
     },
-    "ResetPasswordRequest": {
+    "CredentialRequestPasswordResetDto": {
       "type": "object",
       "properties": {
         "email": {
@@ -790,7 +838,7 @@
         }
       }
     },
-    "ResetPasswordResponse": {
+    "CredentialRequestPasswordResetResponseDto": {
       "type": "object",
       "properties": {
         "email": {
@@ -807,7 +855,7 @@
         }
       }
     },
-    "UpdatePasswordRequest": {
+    "CredentialResetPasswordDto": {
       "type": "object",
       "properties": {
         "email": {
@@ -825,15 +873,6 @@
         "token": {
           "type": "string",
           "example": "d1f1e1c1-1a1a-1b1b-1c1c-1d1d1e1e1f1f"
-        }
-      }
-    },
-    "UpdatePasswordResponse": {
-      "type": "object",
-      "properties": {
-        "message": {
-          "type": "string",
-          "example": "Contraseña actualizada correctamente"
         }
       }
     },
